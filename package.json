@@ -27,6 +27,9 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.2.2",
+    "less": "^4.0.0",
+    "less-loader": "^7.2.1",
+    "lesss": "^1.0.0",
     "vue-template-compiler": "^2.6.11"
   }
 }
