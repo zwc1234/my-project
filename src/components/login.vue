@@ -63,12 +63,11 @@ export default {
     login () {
       this.$refs.LoginFormRef.validate(async valid => {
         if (!valid) return this.$message({ message: '登陆失败', type: 'error' })
-        this.$message({ message: '登陆成功', type: 'success' })
         const { data: res } = await this.$http.post('login', this.login_form)
-        console.log(res)
         if (res.meta.status !== 200) return this.$message({ message: '登陆失败' + res.meta.message, type: 'error' })
         window.sessionStorage.setItem('token', res.data.token)
         this.$router.push('/home')
+        this.$message({ message: '登陆成功', type: 'success' })
       })
     }
   }
@@ -86,7 +85,7 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-     box-shadow: 0 0 10px #dddddd;
+    box-shadow: 0 0 10px #dddddd;
     .login_img {
       width: 130px;
       height: 130px;

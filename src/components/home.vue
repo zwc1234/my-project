@@ -5,42 +5,76 @@
         <img src="../assets/heima.png" alt="" />
         <span>电商后台管理系统</span>
       </div>
-      <el-button type="info" @click="logout">退出</el-button>
+      <el-button type="info" @click="logout"  v-model="isCollapse">退出</el-button>
     </el-header>
     <el-container>
-      <el-aside width="200px">
+      <el-aside :width="isCollapse ? '60px' : '200px'">
+        <div class="toggle-button" @click="toggleCollapse" :collapse="isCollapse">|||</div>
         <el-menu
           background-color="#545c64"
           text-color="#fff"
-          active-text-color="#ffd04b"
+          active-text-color="#409EFF"
+          unique-opened router :collapse="isCollapse" :collapse-transition="false" :default-active="activePath"
         >
-          <el-submenu index="1">
+          <el-submenu :index="item.id + ''" v-for="item in menuList" :key="item.id">
             <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>导航一</span>
+              <i :class="iconsObj[item.id]"></i>
+              <span>{{ item.authName }}</span>
             </template>
-            <el-menu-item index="1-4-1">
-              <i class="el-icon-location"></i>
-              <span>导航一</span>
-            </el-menu-item>
-            <el-menu-item index="1-4-1">
-              <i class="el-icon-location"></i>
-              <span>导航一</span>
+            <el-menu-item
+              :index="'/' + subitem.path"
+              v-for="subitem in item.children"
+              :key="subitem.id" @click="saveNavState('/'+subitem.path)"
+            >
+              <i class="el-icon-menu"></i>
+              <span>{{ subitem.authName }}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view />
+      </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      menuList: [],
+      iconsObj: {
+        125: 'iconfont icon-user',
+        103: 'iconfont icon-tijikongjian',
+        101: 'iconfont icon-shangpin',
+        102: 'iconfont icon-danju',
+        145: 'iconfont icon-baobiao'
+      },
+      isCollapse: false,
+      activePath: ''
+    }
+  },
+  created() {
+    this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('path')
+  },
   methods: {
-    logout () {
+    logout() {
       window.sessionStorage.clear()
       this.$router.push('login')
+    },
+    async getMenuList() {
+      const { data: res } = await this.$http.get('menus')
+      if (res.meta.status !== 200) return this.$message({ message: '获取失败' + res.meta.message, type: 'error' })
+      this.menuList = res.data
+    },
+    toggleCollapse () {
+      this.isCollapse = !this.isCollapse
+    },
+    saveNavState (path) {
+      window.sessionStorage.setItem('path', path)
+      this.activePath = path
     }
   }
 }
@@ -71,5 +105,18 @@ export default {
 }
 .el-main {
   background-color: #eaedf1;
+}
+i {
+  margin-right: 15px;
+}
+.toggle-button {
+  line-height: 24px;
+  font-size: 12px;
+  text-align: center;
+  color: #ffffff;
+  cursor: pointer;
+}
+.el-menu {
+  border-right: none;
 }
 </style>
